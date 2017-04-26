@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\images\service.jpg" />
     <Content Include="wwwroot\images\slides\1.jpg" />
     <Content Include="wwwroot\images\slides\2.jpg" />
     <Content Include="wwwroot\images\slides\3.jpg" />
