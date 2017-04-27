@@ -1,3 +1,21 @@
-﻿@{
-    Layout = "_LayoutCarousel"; 
+﻿@*eallain: Setup site style
+    Different layout for home page*@
+
+@{
+    //Retrieve current controller
+    string controller = ViewContext.RouteData.Values["Controller"].ToString();
+
+    //Retrieve current action
+    string action = ViewContext.RouteData.Values["Action"].ToString();
+
+    //Check if user is on Home Controller and Index Action
+    if(controller == "Home" && action == "Index")
+    {
+        Layout = "_LayoutCarousel";
+
+    }
+    else
+    {
+        Layout = "_Layout";
+    }
 }
