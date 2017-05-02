@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ContosoU2016.Models
@@ -12,10 +13,13 @@ namespace ContosoU2016.Models
         //  Computed: Database generates a value when a row is inserted or updated.
         //  Identity: Database generates a value when a row is inserted. 
         //  None: Database does not geerate a value.
+        [Display(Name="Course Number")]
         public int CourseID { get; set; }
 
+        [StringLength(50, MinimumLength =3)]
         public string Title { get; set; }
 
+        [Range(0,5)]
         public int Credits { get; set; }
 
         //=============== NAVIGATION PROPERTIES ===============
