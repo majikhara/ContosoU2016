@@ -44,8 +44,19 @@ namespace ContosoU2016.Controllers
             ViewData["EmailSortParm"] = sortOrder == "email" ? "email_desc" : "email";
             ViewData["DateSortParm"] = sortOrder == "date" ? "date_desc" : "date";
 
+            //rewrite one of the coalescing if
+            //if(sortOrder == "fname")
+            //{
+            //    sortOrder = "fname_desc";
+            //}
+            //else
+            //{
+            //    sortOrder = "fname";
+            //}
+            // ViewData["FNameSortParm"] = sortOrder
+
             //Part 2:  Filtering
-            if(searchString == null)
+            if (searchString == null)
             {
                 searchString = currentFilter;
             }
@@ -116,10 +127,39 @@ namespace ContosoU2016.Controllers
             if (id == null)
             {
                 return NotFound();
+                /*
+                 * Status Codes:
+                 * Success:
+                 * return Ok() <- HTTP Status code 200
+                 * return Created() <- HTTP status code 201
+                 * return NoContent() <- HTTP status code 204
+                 * 
+                 * Client Error:
+                 * return BadRequest() <- HTTP status code 400
+                 * return Unauthorized() <- HTTP status 401
+                 * return NotFound() <- HTTP status 404
+                 */ 
             }
 
+            //eallain:  Update to include related data (enrollment)
+            //var student = await _context.Students
+            //    .SingleOrDefaultAsync(m => m.ID == id);
+
             var student = await _context.Students
-                .SingleOrDefaultAsync(m => m.ID == id);
+            .Include(s=>s.Enrollments)
+            .ThenInclude(c=>c.Course)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(m => m.ID == id);
+            /*
+            * ====================================================== No-tracking queries =======================================================
+            * When a database context retrieves table rows and creates entity objects that represent them, by default it keeps track of whether 
+            * the entities in memory are in sync with what's in the database. The data in memory acts as a cache and is used when you update an entity. 
+            * This caching is often unnecessary in a web application because context instances are typically short-lived 
+            * (a new one is created and disposed for each request) and the context that reads an entity is typically disposed before that entity is used again.
+            * 
+            * Ref:  https://docs.microsoft.com/en-us/ef/core/querying/tracking
+            */
+            
             if (student == null)
             {
                 return NotFound();
@@ -139,14 +179,24 @@ namespace ContosoU2016.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EnrollmentDate,ID,LastName,FirstName,Email")] Student student)
+        public async Task<IActionResult> Create([Bind("EnrollmentDate,LastName,FirstName,Email")] Student student)
         {
-            if (ModelState.IsValid)
+            //eallain:  remove the id from the bind attributes: ID is the PK as well as IDENTITY
+            try
             {
-                _context.Add(student);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                    if (ModelState.IsValid)
+                    {
+                        _context.Add(student);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction("Index");
+                    }
             }
+            catch (DbUpdateException)
+            {
+
+                ModelState.AddModelError("", "Unable to save changes. " + "Please try again.");
+            }
+        
             return View(student);
         }
 
@@ -169,41 +219,51 @@ namespace ContosoU2016.Controllers
         // POST: Student/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EnrollmentDate,ID,LastName,FirstName,Email")] Student student)
+        public async Task<IActionResult> EditPost(int? id)
         {
-            if (id != student.ID)
+            if (id == null)
             {
+                
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //Find the student to be updated
+            var studentToUpdate = await _context.Students.SingleOrDefaultAsync(s => s.ID == id);
+
+            //Try to update this student
+            if(await TryUpdateModelAsync<Student>
+                (studentToUpdate, "", s=>s.FirstName, s=>s.LastName, s=> s.Email, s=>s.EnrollmentDate))
             {
                 try
                 {
-                    _context.Update(student);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
+                    await _context.SaveChangesAsync(); //Save changes back to database
+                    return RedirectToAction("Index");  //redirect user back to index route
+                }                   
+                catch (DbUpdateException /*ex*/)
                 {
-                    if (!StudentExists(student.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //Log the error (by uncommenting the "ex" variable) and write to a log file.
+                    //return a ModelStateError
+                    ModelState.AddModelError("", "Unable to save changes." + "Try again");
                 }
-                return RedirectToAction("Index");
             }
-            return View(student);
+            //return the view and attach the studentToUpdate model
+            return View(studentToUpdate);
+          
         }
 
         // GET: Student/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, bool? saveChangesError=false)
         {
+            //eallain
+            /* This code accepts an optional boolean parameter that indicates whether the method was called after
+             * a delete failure (failure saving changes back to database).
+             * When it is called by the HTTPPost Delete method in response to database error, this parameter
+             * will be passed in set to true.
+             * 
+             */
+
             if (id == null)
             {
                 return NotFound();
@@ -216,6 +276,12 @@ namespace ContosoU2016.Controllers
                 return NotFound();
             }
 
+            //eallain:  return update error if necessary
+            if (saveChangesError.GetValueOrDefault())
+            {
+                ViewData["ErrorMessage"] = "Delete failed! Try again later.";
+            }
+
             return View(student);
         }
 
@@ -224,11 +290,28 @@ namespace ContosoU2016.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var student = await _context.Students.SingleOrDefaultAsync(m => m.ID == id);
-            _context.Students.Remove(student);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
-        }
+            var student = await _context.Students.AsNoTracking().SingleOrDefaultAsync(m => m.ID == id);
+
+            //eallain:  check if student exists
+            if(student == null)
+            {
+                return RedirectToAction("Index");
+            }
+            try
+            {
+                _context.Students.Remove(student);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+	        catch (DbUpdateException)
+            {
+                //return user to the Delete GET method passing it the current student (ID)
+                //and a flag argument set to TRUE for representing and error saving
+                return RedirectToAction("Delete", new {id=id, saveChangesError=true});
+            
+	        }
+    }
+
 
         private bool StudentExists(int id)
         {
