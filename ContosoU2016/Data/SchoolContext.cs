@@ -10,7 +10,6 @@ namespace ContosoU2016.Data
         public SchoolContext(DbContextOptions<SchoolContext> options):base(options)
         {
 
-
         }
 
         //Specifying Entity Sets - corresponding to database tables and each single
@@ -20,6 +19,11 @@ namespace ContosoU2016.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Course> Courses { get; set; }
+
+        //Complex Data Model
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<OfficeAssignment> OfficeAssignments { get; set; }
+        public DbSet<CourseAssignment> CourseAssignments { get; set; }
 
         /*
          * When the database is created, EF creates tables that have names the same as the DbSet
@@ -34,6 +38,14 @@ namespace ContosoU2016.Data
             modelBuilder.Entity<Enrollment>().ToTable("Enrollment");
             modelBuilder.Entity<Student>().ToTable("Student");
             modelBuilder.Entity<Instructor>().ToTable("Instructor");
+
+            //Complex Data Model
+            modelBuilder.Entity<OfficeAssignment>().ToTable("OfficeAssignment");
+            modelBuilder.Entity<CourseAssignment>().ToTable("CourseAssignment");
+            modelBuilder.Entity<Department>().ToTable("Department");
+
+            //Composite PK on CourseAssignment (CourseID, InstructorID)
+            modelBuilder.Entity<CourseAssignment>().HasKey(c => new { c.CourseID, c.InstructorID });
         }
 
     }
