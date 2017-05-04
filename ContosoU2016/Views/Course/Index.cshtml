@@ -1,0 +1,73 @@
+@model IEnumerable<ContosoU2016.Models.Course>
+
+@{
+    ViewData["Title"] = "Courses";
+}
+
+<h2>Courses</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> Create New</a>
+</p>
+
+@*eallain:  Reading Related Data:
+            Add custom method to return list of departments for dropdown filter.*@
+<form asp-action="Index">
+    <div class="form-inline">
+        <div class="form-group">
+            Select Department:  <select class="form-control input-sm" 
+                                        asp-items="ViewBag.SelectedDepartment" 
+                                        id="SelectedDepartment"
+                                        name="SelectedDepartment" 
+                                        onchange="$(this).closest('form').submit();">
+                                    <option value="">All</option>
+                                </select>
+            <button type="submit" class="btn btn-success">
+                <i class="glyphicon glyphicon-filter"></i> Filter
+            </button>
+        </div>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CourseID)
+            </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Credits)
+                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Department)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CourseID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Credits)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Department.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.CourseID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.CourseID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.CourseID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
