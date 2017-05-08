@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Course>
+
+@{ 
+    ViewData["Title"] = "Our Courses";
+}
+
+<h2>Our Courses</h2>
+<form asp-action="Listing">
+    <div class="form-inline">
+        <div class="form-group">
+            Select Department:  <select class="form-control input-sm"
+                                        asp-items="ViewBag.SelectedDepartment"
+                                        id="SelectedDepartment"
+                                        name="SelectedDepartment"
+                                        onchange="$(this).closest('form').submit();">
+                <option value="">All</option>
+            </select>
+            <button type="submit" class="btn btn-success">
+                <i class="glyphicon glyphicon-filter"></i> Filter
+            </button>
+        </div>
+    </div>
+</form>
+
+<div class="top-buffer">
+    @{ //Check for number of items
+        int numItems = Model.Count();
+        if(numItems > 0)
+        {
+            //Display the courses
+            <h4>@numItems Total Courses</h4>
+            foreach(var item in Model)
+            {
+        <div class="col-md-4">   
+            <div class="course-listing">    
+                <h3>@item.CourseIdTitle</h3>
+                <p>@item.Credits Credits</p>
+                <p>Description would go here...</p>
+                <a asp-action="Details" asp-route-id="@item.CourseID" class="btn btn-primary">
+                    View Details
+                </a>
+            </div>
+         </div>
+
+            }
+
+        }
+        else
+        {
+            //No courses within the selected department
+            <div class="alert alert-info" role="alert">
+                There are no courses within this department!
+            </div>
+        }
+
+    }
+</div>

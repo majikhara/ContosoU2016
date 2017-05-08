@@ -1,0 +1,148 @@
+@*@model IEnumerable<ContosoU2016.Models.Instructor>*@
+@model ContosoU2016.Models.SchoolViewModels.InstructorIndexData
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> Create New</a>
+</p>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                   Name
+                </th>
+                <th>
+                    Email
+                </th>
+                <th>
+                    Hire Date
+                </th>
+                <th>
+                    Office
+                </th>
+                <th>
+                    Courses
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Instructors)
+            {
+                string selectedRow = "";
+                if(item.ID == (int?) ViewData["InstructorID"])
+                {
+                    selectedRow = "success";
+                }
+                <tr class="@selectedRow">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FullName)
+                    </td>
+               
+                    <td>
+                        @Html.DisplayTextFor(modelItem => item.Email)  @*If you just use "DisplayTextFor" email will no longer be a hyperlink*@
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.HireDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OfficeAssignment.Location)
+                        @*@if (@item.OfficeAssignment.Location != null)
+                        {
+                            @item.OfficeAssignment.Location)
+                        }*@
+                    </td>
+                    <td>
+                        @{
+                            @foreach (var course in item.Courses)
+                            {
+                                @*@course.Course.CourseIdTitle <br />*@
+                                @course.Course.CourseID@::&nbsp;&nbsp; @course.Course.Title <br />
+
+                            }
+                        }
+                    </td>
+                    <td class="ico">
+                        <a title="View Instructor Courses" asp-action="Index" asp-route-id="@item.ID" class="ico-success"><i class="glyphicon glyphicon-list"></i></a>
+                        <a title="Edit Instructor" asp-action="Edit" asp-route-id="@item.ID" class="ico-info"><i class="glyphicon glyphicon-pencil"></i></a>
+                        <a title="View Instructor Details" asp-action="Details" asp-route-id="@item.ID" class="ico-primary"><i class="glyphicon glyphicon-zoom-in"></i></a>
+                        <a title="Delete Instructor" asp-action="Delete" asp-route-id="@item.ID" class="ico-danger"><i class="glyphicon glyphicon-trash"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @*Instructor Selected:  Show courses that instructor teaches*@
+    
+    @if(Model.Courses != null) //make sure we have courses for this instructor first
+    {
+        <h3>Courses taught by:  @ViewData["InstructorName"]</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@*@ViewData["InstructorID"]*@</th>
+                    <th>Number</th>
+                    <th>Title</th>
+                    <th>Department</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.Courses)
+                {
+                    string selectedCourse = "";
+                    if(item.CourseID == (int?)ViewData["CourseID"])
+                    {
+                        selectedCourse = "danger";
+
+                    }
+                    <tr class="@selectedCourse">
+                        <td><a title="View Courses" 
+                               asp-action="Index" 
+                               asp-route-courseID="@item.CourseID" 
+                               class="ico-success">
+                                    <i class="glyphicon glyphicon-list"></i>
+                            </a>
+                        </td>
+                        <td>@item.CourseID</td>
+                        <td>@item.Title</td>
+                        <td>@item.Department.Name</td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    }
+
+    @*Course Selected:  Show enrollment for selected course*@
+    @if(Model.Enrollments != null)
+    {
+        string CourseTitle = Model.Enrollments.First().Course.Title;
+        <h3>Students enrolled in: @CourseTitle</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+               @foreach(var item in Model.Enrollments)
+               {
+                   <tr>
+                       <td>@item.Student.FullName</td>
+                       <td>@Html.DisplayFor(m=>item.Grade)</td>
+                   </tr>
+
+               }
+            </tbody>
+        </table>
+
+    }
+
+</div>

@@ -7,13 +7,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ContosoU2016.Data;
 using ContosoU2016.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ContosoU2016.Controllers
 {
+    [Authorize] //ONLY Authorized users
     public class CourseController : Controller
     {
         private readonly SchoolContext _context;
 
+       
         public CourseController(SchoolContext context)
         {
             _context = context;
@@ -58,6 +61,7 @@ namespace ContosoU2016.Controllers
         }
 
             // GET: Course/Details/5
+            [AllowAnonymous]
             public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -181,6 +185,13 @@ namespace ContosoU2016.Controllers
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> Listing(int? SelectedDepartment)
+        {
+            var courses = GetCourses(SelectedDepartment);
+            return View(await courses.ToListAsync());
         }
 
         private bool CourseExists(int id)

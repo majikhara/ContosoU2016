@@ -1,4 +1,6 @@
-﻿namespace ContosoU2016.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ContosoU2016.Models
 {
     //Grade enumeration
     public enum Grade
@@ -31,6 +33,8 @@
          * CourseID, since the Course Entity's primary key is CourseID.
          */
 
+         //Show "No Grade" instead of blank when Grade is NULL
+         [DisplayFormat(NullDisplayText ="No Grade Yet")]
         public Grade? Grade { get; set; } //? makes it nullable: Because we don't get a grade when registering
 
         //======================= NAVIGATION PROPERTIES ========================

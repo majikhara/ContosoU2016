@@ -25,7 +25,7 @@ namespace ContosoU2016.Models
          * Therefore, the key attribute is used to identify it as the key.
          */ 
          [StringLength(50)]
-         [Display(Name ="OfficeLocation")]
+         [Display(Name ="Office Location")]
         public string Location { get; set; }
         //================= NAVIGATION PROPERTY =================
         public virtual Instructor Instructor { get; set; }

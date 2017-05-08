@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ContosoU2016.Data;
 using ContosoU2016.Models;
 using ContosoU2016.Helpers;
+using ContosoU2016.Models.SchoolViewModels;
 
 namespace ContosoU2016.Controllers
 {
@@ -311,6 +312,22 @@ namespace ContosoU2016.Controllers
             
 	        }
     }
+        //eallain
+        //GET Student/Stats
+        public async Task<IActionResult> Stats()
+        {
+            //Populate the EnrollmentDateGroup ViewModel with Student Statistics
+            IQueryable<EnrollmentDateGroup> data =
+                from student in _context.Students //FROM Students
+                group student by student.EnrollmentDate into dateGroup //GROUP by EnrollmentDate
+                select new EnrollmentDateGroup //SELECT EnrollmentDate COUNT(*) as StudentCount
+                {
+                    EnrollmentDate = dateGroup.Key,
+                    StudentCount = dateGroup.Count()
+                };
+
+            return View(await data.AsNoTracking().ToListAsync()); //AsNoTracking is not necessary
+        }
 
 
         private bool StudentExists(int id)

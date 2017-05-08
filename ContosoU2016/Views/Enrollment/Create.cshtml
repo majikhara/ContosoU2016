@@ -1,0 +1,52 @@
+@model ContosoU2016.Models.Enrollment
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<form asp-action="Create">
+    <div class="form-horizontal">
+        <h4>Enrollment</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="CourseID" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="CourseID" class ="form-control" asp-items="ViewBag.CourseID"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="StudentID" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="StudentID" class ="form-control" asp-items="ViewBag.StudentID"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Grade" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                @*<input asp-for="Grade" class="form-control" />*@
+                @*eallain:  changed input for select populated using Grade enum*@
+                <select asp-for="Grade" class="form-control" asp-items="Html.GetEnumSelectList<Grade>()">
+                    <option value="">No Grade</option>
+
+                </select>
+                <span asp-validation-for="Grade" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-success"><i class="glyphicon glyphicon-save"></i> Create</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

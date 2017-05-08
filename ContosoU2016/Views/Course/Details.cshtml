@@ -17,10 +17,10 @@
             @Html.DisplayFor(model => model.Department.Name)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model=>model.CourseID)
+            @Html.DisplayNameFor(model => model.CourseID)
         </dt>
         <dd>
-            @Html.DisplayFor(model=>model.CourseID)
+            @Html.DisplayFor(model => model.CourseID)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Title)
@@ -34,10 +34,23 @@
         <dd>
             @Html.DisplayFor(model => model.Credits)
         </dd>
-        
+
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.CourseID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (User.Identity.IsAuthenticated)
+    {
+        //Authenticated
+        //Note the @: is used here to explicitly indicate the start of content
+        //            in this case it will add a pipe |
+
+        <a asp-action="Edit" asp-route-id="@Model.CourseID">Edit</a> @:| 
+        <a asp-action="Index"> Back to List</a>
+    }
+    else
+    {
+        //Non-Authenticated
+        <a asp-action="Index"> Back to List</a>
+    }
+
 </div>
