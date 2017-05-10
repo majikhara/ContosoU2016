@@ -10,7 +10,7 @@ namespace ContosoU2016.Models.SchoolViewModels
         /*
          *  The Instructors Index page will show data from three different tables, so for this
          *  reason we are creating the InstructorIndexData ViewModel.  It will include three properties
-         *  each holding the dataa for one of the following tables:
+         *  each holding the data for one of the following tables:
          *  - Instructor
          *  - Course
          *  - Enrollment

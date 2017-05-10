@@ -32,8 +32,15 @@
             @Html.DisplayNameFor(model => model.Email)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Email)
+            @Html.DisplayTextFor(model => model.Email)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.OfficeAssignment.Location)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.OfficeAssignment.Location)
+        </dd>
+        <dd></dd>
     </dl>
 </div>
 <div>

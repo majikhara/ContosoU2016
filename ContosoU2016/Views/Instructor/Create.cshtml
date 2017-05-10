@@ -48,13 +48,44 @@
             </div>
         </div>
 
-        @*<div class="form-group">
-            <label asp-for="OfficeAssignment" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="OfficeAssignment" class="form-control" />
-                <span asp-validation-for="OfficeAssignment" class="text-danger"></span>
-            </div>
-        </div>*@
+        @*eallain:  Added List of Courses *@
+        <div class="form-group">
+          <div class="col-md-offset-2 col-md-10">
+              <table>
+                  <tr>
+                      @{ 
+                          //need counter for creating html table with 3 columns
+                          int cnt = 0;
+                          //create list of AssignedCourseData called courses
+                          //populated with ViewBag Courses
+                          List<ContosoU2016.Models.SchoolViewModels.AssignedCourseData> courses = ViewBag.Courses;
+
+                          //Loop each of the courses to create 3 columns
+                          //Note:  We will need to use the @: to indicate that start of content
+                          foreach(var course in courses)
+                          {
+                              if(cnt++ % 3 == 0)
+                              {
+                                  @:</tr><tr>
+
+                              }
+                              @:<td>
+                                    <input type="checkbox" 
+                                           name="selectedCourses"
+                                           value="@course.CourseID" 
+                                           @(Html.Raw(course.Assigned? "checked" : ""))/>
+                                           //html.raw allows you to print text containing html and does nto encode special chars
+
+                                           <span style="font-weight:bold;padding-right:0.75em;">@course.CourseID</span>@course.Title
+                              @:</td>
+                          }
+                            @:</tr>
+
+                      }
+                
+              </table>
+          </div>
+        </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
