@@ -1,0 +1,47 @@
+@model ContosoU2016.Models.Course
+
+@{
+    ViewData["Title"] = "Enroll";
+}
+
+<h2>Enroll</h2>
+
+<form asp-action="Enroll">
+    <div class="form-horizontal">
+        <h4>Enrollment</h4>
+        <hr />
+        @*check for model errors:  like student trying to enroll in course already enrolled in *@
+        @if(!ViewData.ModelState.IsValid)
+        {
+            //There was an error
+            <div class="alert alert-danger" role="alert">
+                @Html.ValidationMessage("AlreadyEnrolled")
+            </div>
+        }
+        <input type="hidden" asp-for="CourseID" />
+        <input type="hidden" name="StudentID" id="StudentID" value="@ViewData["StudentID"]"/>
+        <div class="form-group">
+            <label class="col-md-2 control-label">Selected Course:</label>
+            <div class="col-md-10"> 
+                @Html.DisplayFor(model => model.CourseIdTitle)
+            </div>
+        </div>
+        @if (ViewData.ModelState.IsValid)
+        {
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Enroll" class="btn btn-default" />
+                </div>
+            </div>
+        }
+  
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,74 @@
+@model IEnumerable<ContosoU2016.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Enrolled Courses";
+}
+
+<h2>Enrolled Courses for @ViewData["StudentName"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Course.CourseID)
+                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Course.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Grade)
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.CourseID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Grade)
+            </td>
+  
+        </tr>
+}
+    </tbody>
+</table>
+
+@*Available Courses:  Courses that current student is not enrolled in yet *@
+<h2>Available Courses for @ViewData["StudentName"]</h2>
+
+<table class="table">
+        <thead>
+        <tr>
+            <th>Course Number</th>
+            <th>Title</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @{
+        List<Course> courses = ViewBag.Courses;
+        foreach(var item in courses)
+        {
+            <tr>
+                <td>@Html.DisplayFor(m=>item.CourseID)</td>
+                <td>@Html.DisplayFor(m=>item.Title)</td>
+                <td class="ico">
+                    <a asp-action="Enroll" asp-route-id="@item.CourseID"
+                       class="ico-success" title="Enroll">
+                        <span class="glyphicon glyphicon-plus-sign"></span>Enroll
+                    </a>
+                </td>
+
+            </tr>
+
+        }
+    }
+
+    </tbody>
+</table>
